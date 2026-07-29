@@ -4,4 +4,5 @@
 Manifest.toml
 docs/build/
 docs/Manifest.toml
+benchmark/Manifest.toml
 .DS_Store

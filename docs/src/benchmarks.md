@@ -40,5 +40,8 @@ therefore recovered both the objective front and the decision-space manifold.
 Generate every documentation figure from fresh optimization runs:
 
 ```bash
-julia --project=docs docs/generate_plots.jl
+julia --project=benchmark -e '
+  using Pkg
+  Pkg.develop(path=pwd())
+  include("benchmark/generate_plots.jl")'
 ```

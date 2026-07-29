@@ -2,11 +2,11 @@ using AsyncMultiObjectiveBayesOpt
 using CairoMakie
 using Random
 
-include(joinpath(@__DIR__, "..", "benchmark", "benchmark_functions.jl"))
+include(joinpath(@__DIR__, "benchmark_functions.jl"))
 using .BenchmarkFunctions
 
 CairoMakie.activate!(type="png")
-assets = joinpath(@__DIR__, "src", "assets")
+assets = joinpath(@__DIR__, "..", "docs", "src", "assets")
 mkpath(assets)
 
 function optimize(name, seed, pool)
