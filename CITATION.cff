@@ -1,0 +1,11 @@
+cff-version: 1.2.0
+title: AsyncMultiObjectiveBayesOpt.jl
+message: Please cite this software using the metadata in this file.
+type: software
+authors:
+  - family-names: Mo
+    given-names: Jiajun
+repository-code: https://github.com/Mojiajun2022/AsyncMultiObjectiveBayesOpt.jl
+license: MIT
+version: 0.1.0
+date-released: 2026-07-30
