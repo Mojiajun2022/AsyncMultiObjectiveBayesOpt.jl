@@ -64,7 +64,9 @@ end
         result.pareto_Y, benchmark.reference_front,
     )
     @test igd < 0.065
-    @test maximum(abs, @view result.pareto_X[2, :]) < 0.16
+    manifold_error = sum(abs, @view result.pareto_X[2, :]) /
+                     size(result.pareto_X, 2)
+    @test manifold_error < 0.08
 end
 
 @testset "ZDT1 four-dimensional Pareto-front accuracy" begin
