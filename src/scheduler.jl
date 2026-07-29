@@ -5,7 +5,7 @@ using Printf
 using Random
 using ..ParetoTools: objective_signs, nondominated_indices, compromise_index,
                      hypervolume_2d
-using ..Surrogate: latin_hypercube, propose_parego
+using ..Surrogate: latin_hypercube, propose
 
 export async_mobo
 
@@ -14,7 +14,8 @@ const RESULT_TAG = 8302
 const STOP_TAG = 8303
 
 function validate_inputs(bounds, n_objectives, max_evals, n_initial,
-                         candidate_pool, length_scale, noise, augmentation)
+                         candidate_pool, length_scale, noise, augmentation,
+                         acquisition, ehvi_samples)
     ndims(bounds) == 2 && size(bounds, 2) == 2 ||
         throw(ArgumentError("bounds must be a d x 2 matrix"))
     size(bounds, 1) > 0 || throw(ArgumentError("bounds cannot be empty"))
@@ -31,6 +32,14 @@ function validate_inputs(bounds, n_objectives, max_evals, n_initial,
     noise > 0 || throw(ArgumentError("noise must be positive"))
     augmentation >= 0 ||
         throw(ArgumentError("augmentation must be non-negative"))
+    acquisition in (:auto, :ehvi, :parego) ||
+        throw(ArgumentError(
+            "acquisition must be :auto, :ehvi, or :parego",
+        ))
+    acquisition == :ehvi && n_objectives != 2 &&
+        throw(ArgumentError("EHVI currently supports exactly two objectives"))
+    ehvi_samples > 0 ||
+        throw(ArgumentError("ehvi_samples must be positive"))
 end
 
 function prepare_initial_points(rng, bounds, count, initial_points)
@@ -147,7 +156,7 @@ function serial_loop(objective, bounds, initial, max_evals, n_objectives,
         x = if i <= initial_count
             initial[:, i]
         else
-            propose_parego(
+            propose(
                 rng, bounds, @view(X[:, 1:i-1]),
                 signs .* @view(Y[:, 1:i-1]), zeros(d, 0),
                 i - initial_count;
@@ -167,9 +176,23 @@ end
 """
     async_mobo(objective, bounds; n_objectives, max_evals=100, kwargs...)
 
-Run asynchronous MPI multi-objective Bayesian optimization using ParEGO.
-Every rank calls this function. Rank zero returns a Pareto archive and worker
-ranks return `nothing`. Objective values must be returned as a finite vector.
+Run asynchronous MPI multi-objective Bayesian optimization. Every rank calls
+this function. Rank zero returns a Pareto archive and worker ranks return
+`nothing`. Objective values must be returned as a finite vector.
+
+`bounds` is a `d x 2` matrix containing lower and upper parameter bounds.
+`n_objectives` is required. `objective_senses` contains `:min` or `:max` for
+each objective. `acquisition=:auto` selects Monte Carlo EHVI for two objectives
+and ParEGO for three or more. `max_evals` includes the initial design.
+
+Important keyword arguments include `n_initial`, `initial_points`,
+`candidate_pool`, `length_scale`, `noise`, `exploration`, `augmentation`,
+`optimize_length_scale`, `ehvi_samples`, `initial_concurrency`,
+`gc_after_evaluation`, `seed`, `root`, `comm`, and `verbose`.
+
+The root result contains the Pareto archive, full evaluation history, a
+normalized-ideal compromise point, failure counts, timing, and two-objective
+hypervolume. History columns are ordered by completion time.
 """
 function async_mobo(
         objective::Function, bounds::AbstractMatrix;
@@ -178,12 +201,13 @@ function async_mobo(
         candidate_pool::Int=8192, length_scale::Real=0.2,
         noise::Real=1e-8, exploration::Real=0.005,
         augmentation::Real=0.05, optimize_length_scale::Bool=true,
+        acquisition::Symbol=:auto, ehvi_samples::Int=64,
         initial_concurrency::Int=0, gc_after_evaluation::Bool=false,
         seed::Int=42, root::Int=0, comm=MPI.COMM_WORLD,
         verbose::Bool=true)
     validate_inputs(
         bounds, n_objectives, max_evals, n_initial, candidate_pool,
-        length_scale, noise, augmentation,
+        length_scale, noise, augmentation, acquisition, ehvi_samples,
     )
     senses = collect(objective_senses)
     signs = objective_signs(senses, n_objectives)
@@ -222,6 +246,8 @@ function async_mobo(
         exploration=Float64(exploration),
         optimize_length_scale=optimize_length_scale,
         augmentation=Float64(augmentation),
+        acquisition=acquisition,
+        ehvi_samples=ehvi_samples,
     )
 
     if nranks == 1
@@ -248,7 +274,7 @@ function async_mobo(
             return initial[:, dispatched + 1]
         pending = isempty(assigned) ? zeros(d, 0) :
                   hcat(values(assigned)...)
-        return propose_parego(
+        return propose(
             rng, matrix_bounds, @view(X[:, 1:completed]),
             signs .* @view(Y[:, 1:completed]), pending,
             dispatched - initial_count + 1;

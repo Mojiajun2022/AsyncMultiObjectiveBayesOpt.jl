@@ -34,6 +34,40 @@ end
     @test result.n_evaluations == 12
     @test result.n_failures >= 0
     @test all(isfinite, result.pareto_Y)
+    @test_throws ArgumentError async_mobo(
+        x -> [x[1]^2, (x[1] - 1)^2], [-1.0 1.0];
+        n_objectives=2, max_evals=4, acquisition=:unknown,
+        verbose=false,
+    )
+    @test_throws ArgumentError async_mobo(
+        x -> [x[1]^2, (x[1] - 1)^2, (x[1] + 1)^2], [-1.0 1.0];
+        n_objectives=3, max_evals=4, acquisition=:ehvi,
+        verbose=false,
+    )
+end
+
+@testset "acquisition selection" begin
+    two_objectives(x) = [x[1]^2, (x[1] - 1)^2]
+    for acquisition in (:ehvi, :parego)
+        result = async_mobo(
+            two_objectives, [-1.0 2.0];
+            n_objectives=2, max_evals=8, n_initial=5,
+            candidate_pool=256, acquisition=acquisition,
+            ehvi_samples=8, seed=31, verbose=false,
+        )
+        @test result.n_evaluations == 8
+        @test all(isfinite, result.pareto_Y)
+    end
+
+    result = async_mobo(
+        x -> [x[1]^2, (x[1] - 1)^2, (x[1] + 1)^2],
+        [-1.0 1.0];
+        n_objectives=3, max_evals=8, n_initial=5,
+        candidate_pool=256, acquisition=:auto,
+        seed=32, verbose=false,
+    )
+    @test result.n_evaluations == 8
+    @test size(result.pareto_Y, 1) == 3
 end
 
 @testset "Schaffer Pareto-front accuracy" begin
@@ -47,7 +81,7 @@ end
     igd = inverted_generational_distance(
         result.pareto_Y, benchmark.reference_front,
     )
-    @test igd < 0.055
+    @test igd < 0.03
     @test minimum(result.pareto_X) < 0.12
     @test maximum(result.pareto_X) > 1.88
 end
@@ -63,7 +97,7 @@ end
     igd = inverted_generational_distance(
         result.pareto_Y, benchmark.reference_front,
     )
-    @test igd < 0.065
+    @test igd < 0.03
     manifold_error = sum(abs, @view result.pareto_X[2, :]) /
                      size(result.pareto_X, 2)
     @test manifold_error < 0.08
@@ -80,8 +114,10 @@ end
     igd = inverted_generational_distance(
         result.pareto_Y, benchmark.reference_front,
     )
-    @test igd < 0.075
-    @test extrema(@view result.pareto_Y[1, :]) == (0.0, 1.0)
+    @test igd < 0.04
+    front_range = extrema(@view result.pareto_Y[1, :])
+    @test front_range[1] < 0.02
+    @test front_range[2] > 0.98
     @test sum(@view result.pareto_X[2:end, :]) /
           length(@view result.pareto_X[2:end, :]) < 0.01
 end

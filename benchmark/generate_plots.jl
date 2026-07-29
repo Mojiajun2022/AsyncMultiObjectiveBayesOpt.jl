@@ -46,7 +46,7 @@ scatter!(
     schaffer_result.pareto_Y[2, :];
     color=:dodgerblue,
     markersize=11,
-    label="ParEGO observations",
+    label="EHVI observations",
 )
 axislegend(axis; position=:rt)
 save(joinpath(assets, "schaffer_front.png"), figure; px_per_unit=2)
@@ -73,7 +73,7 @@ scatter!(
     convex_result.pareto_Y[2, :];
     color=:darkorange,
     markersize=10,
-    label="ParEGO observations",
+    label="EHVI observations",
 )
 axislegend(front_axis; position=:rt)
 decision_axis = Axis(
@@ -123,7 +123,7 @@ scatter!(
     zdt1_result.pareto_Y[2, :];
     color=:dodgerblue,
     markersize=11,
-    label="ParEGO observations",
+    label="EHVI observations",
 )
 axislegend(front_axis; position=:rt)
 decision_axis = Axis(
@@ -200,7 +200,7 @@ save(
 )
 
 names = ["Schaffer", "Convex", "ZDT1"]
-parego_igd = [0.032060, 0.044516, 0.054313]
+mobo_igd = [0.008708, 0.005802, 0.023823]
 random_igd = [0.050024, 0.062199, 0.408050]
 figure = Figure(size=(860, 500))
 axis = Axis(
@@ -213,10 +213,10 @@ axis = Axis(
 barplot!(
     axis,
     (1:3) .- 0.18,
-    parego_igd;
+    mobo_igd;
     width=0.34,
     color=:dodgerblue,
-    label="ParEGO",
+    label="MOBO (auto)",
 )
 barplot!(
     axis,

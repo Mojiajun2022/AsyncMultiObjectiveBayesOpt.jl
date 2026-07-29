@@ -7,18 +7,18 @@ Inverted generational distance (IGD) measures the average normalized distance
 from the analytical reference front to the observed Pareto front. Lower is
 better and zero is exact.
 
-| Problem | Dimensions | Budget | Pareto points | ParEGO IGD | Random IGD |
+| Problem | Dimensions | Budget | Pareto points | MOBO (`:auto`) IGD | Random IGD |
 |---|---:|---:|---:|---:|---:|
-| Schaffer N.1 | 1 | 80 | 57 | 0.032060 | 0.050024 |
-| Convex bi-objective | 2 | 100 | 19 | 0.044516 | 0.062199 |
-| ZDT1 | 4 | 180 | 11 | 0.054313 | 0.408050 |
+| Schaffer N.1 | 1 | 80 | 64 | 0.008708 | 0.050024 |
+| Convex bi-objective | 2 | 100 | 83 | 0.005802 | 0.062199 |
+| ZDT1 | 4 | 180 | 17 | 0.023823 | 0.408050 |
 
 The analytical ZDT1 Pareto set requires `x2=x3=x4=0`. In the observed front:
 
-- `f1` covered the complete `[0, 1]` range;
-- the mean of `x2`, `x3`, and `x4` was `0.002798`;
-- the largest auxiliary-variable deviation was `0.054313`;
-- IGD was 86.7% lower than same-budget uniform random search.
+- the 180-evaluation run reduced IGD by about 94% relative to random search;
+- EHVI plus ARD reduced IGD by about 56% relative to the original ParEGO run;
+- a 240-evaluation run reached IGD `0.022147`;
+- all auxiliary variables on that high-accuracy front were exactly zero.
 
 These results show that the optimizer recovered both the analytical objective
 front and its decision-space manifold. They do not imply that every black-box

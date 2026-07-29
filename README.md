@@ -19,8 +19,8 @@ balance two or more competing objectives.
   finishes; there is no batch barrier.
 - **Multi-objective by construction:** the final archive uses original
   objective vectors and Pareto dominance.
-- **Scalable acquisition:** ParEGO handles two to several objectives without
-  expensive high-dimensional hypervolume integration.
+- **Objective-aware acquisition:** two-objective problems use EHVI for direct
+  Pareto-front improvement; three or more objectives use scalable ParEGO.
 - **Pending-point awareness:** Kriging-believer fantasies discourage duplicate
   work across concurrent workers.
 - **Practical surrogate:** exact normalized Gaussian processes, automatic
@@ -88,15 +88,17 @@ Every rank calls `async_mobo`; only rank zero receives the result.
 
 ## Algorithm
 
-Each proposal uses an augmented Tchebycheff scalarization with a changing
-objective weight. Periodic near-extreme weights improve coverage of front
-endpoints, while Dirichlet weights explore intermediate trade-offs.
+Two-objective problems use Monte Carlo expected hypervolume improvement (EHVI)
+with one independent GP per objective. Three or more objectives use augmented
+Tchebycheff ParEGO with changing objective weights. Periodic near-extreme
+weights improve endpoint coverage, while Dirichlet weights explore intermediate
+trade-offs.
 
-For each scalarization, the optimizer:
+The optimizer:
 
 1. normalizes finite objective observations;
-2. fits an exact RBF Gaussian process;
-3. selects a length scale by marginal likelihood;
+2. fits exact RBF Gaussian processes;
+3. selects global and per-dimension ARD length scales by marginal likelihood;
 4. adds posterior-mean fantasies for pending points;
 5. evaluates expected improvement over global and Pareto-local candidates;
 6. dispatches the best non-duplicate point.
@@ -104,22 +106,59 @@ For each scalarization, the optimizer:
 Scalarization is used only for acquisition. The returned archive is computed
 from the original objective vectors.
 
+## Keyword arguments
+
+| Keyword | Default | Meaning |
+|---|---:|---|
+| `n_objectives` | required | Number of values returned by the objective |
+| `objective_senses` | all `:min` | One `:min` or `:max` entry per objective |
+| `max_evals` | `100` | Total evaluation budget, including initialization |
+| `n_initial` | automatic | Latin-hypercube initial design size; `0` selects an adaptive default |
+| `initial_points` | `nothing` | Known points as a vector or a `d x n` matrix |
+| `candidate_pool` | `8192` | Candidate points ranked at every proposal |
+| `length_scale` | `0.2` | Initial RBF scale in normalized parameter space |
+| `noise` | `1e-8` | GP diagonal noise/jitter; increase for noisy objectives |
+| `optimize_length_scale` | `true` | Optimize global and ARD scales by marginal likelihood |
+| `acquisition` | `:auto` | `:ehvi`, `:parego`, or automatic selection |
+| `ehvi_samples` | `64` | Monte Carlo samples per candidate for two-objective EHVI |
+| `exploration` | `0.005` | Expected-improvement offset used by ParEGO |
+| `augmentation` | `0.05` | Augmented Tchebycheff coefficient used by ParEGO |
+| `initial_concurrency` | `0` | Workers used before initialization completes; `0` is automatic |
+| `gc_after_evaluation` | `false` | Run full garbage collection after each worker evaluation |
+| `seed` | `42` | Optimizer random seed |
+| `root` | `0` | MPI scheduler rank |
+| `comm` | `MPI.COMM_WORLD` | MPI communicator |
+| `verbose` | `true` | Print each completed evaluation on the root rank |
+
+`ehvi_samples` affects acquisition precision and scheduler cost, not the number
+of objective evaluations. In the included ZDT1 experiments, increasing it
+beyond 64 had less effect than improving the surrogate or adding evaluations.
+
+The automatic initial design is:
+
+```text
+max(3d + 1, 5m, 2 * min(workers, 4d))
+```
+
+where `d` is the parameter dimension and `m` is the number of objectives. It is
+always capped by `max_evals`.
+
 ## Benchmark accuracy
 
 All included benchmarks have analytical Pareto fronts. IGD is normalized
 inverted generational distance; lower is better.
 
-| Problem | Dimensions | Budget | ParEGO IGD | Random IGD |
+| Problem | Dimensions | Budget | MOBO (`:auto`) IGD | Random IGD |
 |---|---:|---:|---:|---:|
-| Schaffer N.1 | 1 | 80 | 0.032060 | 0.050024 |
-| Convex bi-objective | 2 | 100 | 0.044516 | 0.062199 |
-| ZDT1 | 4 | 180 | 0.054313 | 0.408050 |
+| Schaffer N.1 | 1 | 80 | 0.008708 | 0.050024 |
+| Convex bi-objective | 2 | 100 | 0.005802 | 0.062199 |
+| ZDT1 | 4 | 180 | 0.023823 | 0.408050 |
 
 ![IGD comparison](docs/src/assets/igd_comparison.png)
 
-For ZDT1, the returned front covered the full analytical `f1` range `[0, 1]`.
-The three decision variables that must converge to zero had observed mean
-`0.002798`.
+For ZDT1, EHVI plus ARD reduced IGD by about 56% relative to the original
+ParEGO implementation. A 240-evaluation high-accuracy run reached IGD
+`0.022147` and placed all three auxiliary decision variables exactly at zero.
 
 Reproduce the results:
 
