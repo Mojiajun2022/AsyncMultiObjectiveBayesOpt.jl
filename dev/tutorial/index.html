@@ -1,33 +1,169 @@
 <!DOCTYPE html>
-<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Tutorial · AsyncMultiObjectiveBayesOpt.jl</title><meta name="title" content="Tutorial · AsyncMultiObjectiveBayesOpt.jl"/><meta property="og:title" content="Tutorial · AsyncMultiObjectiveBayesOpt.jl"/><meta property="twitter:title" content="Tutorial · AsyncMultiObjectiveBayesOpt.jl"/><meta name="description" content="Documentation for AsyncMultiObjectiveBayesOpt.jl."/><meta property="og:description" content="Documentation for AsyncMultiObjectiveBayesOpt.jl."/><meta property="twitter:description" content="Documentation for AsyncMultiObjectiveBayesOpt.jl."/><meta property="og:url" content="https://Mojiajun2022.github.io/AsyncMultiObjectiveBayesOpt.jl/tutorial/"/><meta property="twitter:url" content="https://Mojiajun2022.github.io/AsyncMultiObjectiveBayesOpt.jl/tutorial/"/><link rel="canonical" href="https://Mojiajun2022.github.io/AsyncMultiObjectiveBayesOpt.jl/tutorial/"/><script data-outdated-warner src="../assets/warner.js"></script><link href="https://cdnjs.cloudflare.com/ajax/libs/lato-font/3.0.0/css/lato-font.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/juliamono/0.050/juliamono.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/fontawesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/solid.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/brands.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.8/katex.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL=".."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" data-main="../assets/documenter.js"></script><script src="../search_index.js"></script><script src="../siteinfo.js"></script><script src="../../versions.js"></script><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/catppuccin-mocha.css" data-theme-name="catppuccin-mocha"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/catppuccin-macchiato.css" data-theme-name="catppuccin-macchiato"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/catppuccin-frappe.css" data-theme-name="catppuccin-frappe"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/catppuccin-latte.css" data-theme-name="catppuccin-latte"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/documenter-dark.css" data-theme-name="documenter-dark" data-theme-primary-dark/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/documenter-light.css" data-theme-name="documenter-light" data-theme-primary/><script src="../assets/themeswap.js"></script></head><body><div id="documenter"><nav class="docs-sidebar"><div class="docs-package-name"><span class="docs-autofit"><a href="../">AsyncMultiObjectiveBayesOpt.jl</a></span></div><button class="docs-search-query input is-rounded is-small is-clickable my-2 mx-auto py-1 px-2" id="documenter-search-query">Search docs (Ctrl + /)</button><ul class="docs-menu"><li><a class="tocitem" href="../">Home</a></li><li><a class="tocitem" href="../installation/">Installation</a></li><li class="is-active"><a class="tocitem" href>Tutorial</a><ul class="internal"><li><a class="tocitem" href="#1.-Define-a-vector-valued-objective"><span>1. Define a vector-valued objective</span></a></li><li><a class="tocitem" href="#2.-Run-the-optimizer"><span>2. Run the optimizer</span></a></li><li><a class="tocitem" href="#3.-Inspect-the-Pareto-archive"><span>3. Inspect the Pareto archive</span></a></li><li><a class="tocitem" href="#4.-Mixed-minimization-and-maximization"><span>4. Mixed minimization and maximization</span></a></li><li><a class="tocitem" href="#5.-Choose-an-evaluation-budget"><span>5. Choose an evaluation budget</span></a></li><li><a class="tocitem" href="#6.-Connect-an-expensive-simulation"><span>6. Connect an expensive simulation</span></a></li><li><a class="tocitem" href="#7.-Save-results"><span>7. Save results</span></a></li></ul></li><li><a class="tocitem" href="../mpi/">MPI and clusters</a></li><li><a class="tocitem" href="../examples/">Examples</a></li><li><a class="tocitem" href="../benchmarks/">Benchmarks</a></li><li><a class="tocitem" href="../api/">API reference</a></li></ul><div class="docs-version-selector field has-addons"><div class="control"><span class="docs-label button is-static is-size-7">Version</span></div><div class="docs-selector control is-expanded"><div class="select is-fullwidth is-size-7"><select id="documenter-version-selector"></select></div></div></div></nav><div class="docs-main"><header class="docs-navbar"><a class="docs-sidebar-button docs-navbar-link fa-solid fa-bars is-hidden-desktop" id="documenter-sidebar-button" href="#"></a><nav class="breadcrumb"><ul class="is-hidden-mobile"><li class="is-active"><a href>Tutorial</a></li></ul><ul class="is-hidden-tablet"><li class="is-active"><a href>Tutorial</a></li></ul></nav><div class="docs-right"><a class="docs-navbar-link" href="https://github.com/Mojiajun2022/AsyncMultiObjectiveBayesOpt.jl" title="View the repository on GitHub"><span class="docs-icon fa-brands"></span><span class="docs-label is-hidden-touch">GitHub</span></a><a class="docs-navbar-link" href="https://github.com/Mojiajun2022/AsyncMultiObjectiveBayesOpt.jl/blob/main/docs/src/tutorial.md#" title="Edit source on GitHub"><span class="docs-icon fa-solid"></span></a><a class="docs-settings-button docs-navbar-link fa-solid fa-gear" id="documenter-settings-button" href="#" title="Settings"></a><a class="docs-article-toggle-button fa-solid fa-chevron-up" id="documenter-article-toggle-button" href="javascript:;" title="Collapse all docstrings"></a></div></header><article class="content" id="documenter-page"><h1 id="Tutorial"><a class="docs-heading-anchor" href="#Tutorial">Tutorial</a><a id="Tutorial-1"></a><a class="docs-heading-anchor-permalink" href="#Tutorial" title="Permalink"></a></h1><h2 id="1.-Define-a-vector-valued-objective"><a class="docs-heading-anchor" href="#1.-Define-a-vector-valued-objective">1. Define a vector-valued objective</a><a id="1.-Define-a-vector-valued-objective-1"></a><a class="docs-heading-anchor-permalink" href="#1.-Define-a-vector-valued-objective" title="Permalink"></a></h2><p>The objective accepts one parameter vector and returns a fixed-length vector. This example minimizes two competing quadratic objectives:</p><pre><code class="language-julia hljs">using AsyncMultiObjectiveBayesOpt
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Tutorial · AsyncMultiObjectiveBayesOpt.jl</title><meta name="title" content="Tutorial · AsyncMultiObjectiveBayesOpt.jl"/><meta property="og:title" content="Tutorial · AsyncMultiObjectiveBayesOpt.jl"/><meta property="twitter:title" content="Tutorial · AsyncMultiObjectiveBayesOpt.jl"/><meta name="description" content="Documentation for AsyncMultiObjectiveBayesOpt.jl."/><meta property="og:description" content="Documentation for AsyncMultiObjectiveBayesOpt.jl."/><meta property="twitter:description" content="Documentation for AsyncMultiObjectiveBayesOpt.jl."/><meta property="og:url" content="https://Mojiajun2022.github.io/AsyncMultiObjectiveBayesOpt.jl/tutorial/"/><meta property="twitter:url" content="https://Mojiajun2022.github.io/AsyncMultiObjectiveBayesOpt.jl/tutorial/"/><link rel="canonical" href="https://Mojiajun2022.github.io/AsyncMultiObjectiveBayesOpt.jl/tutorial/"/><script data-outdated-warner src="../assets/warner.js"></script><link href="https://cdnjs.cloudflare.com/ajax/libs/lato-font/3.0.0/css/lato-font.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/juliamono/0.050/juliamono.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/fontawesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/solid.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/brands.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.8/katex.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL=".."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" data-main="../assets/documenter.js"></script><script src="../search_index.js"></script><script src="../siteinfo.js"></script><script src="../../versions.js"></script><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/catppuccin-mocha.css" data-theme-name="catppuccin-mocha"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/catppuccin-macchiato.css" data-theme-name="catppuccin-macchiato"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/catppuccin-frappe.css" data-theme-name="catppuccin-frappe"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/catppuccin-latte.css" data-theme-name="catppuccin-latte"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/documenter-dark.css" data-theme-name="documenter-dark" data-theme-primary-dark/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/documenter-light.css" data-theme-name="documenter-light" data-theme-primary/><script src="../assets/themeswap.js"></script></head><body><div id="documenter"><nav class="docs-sidebar"><div class="docs-package-name"><span class="docs-autofit"><a href="../">AsyncMultiObjectiveBayesOpt.jl</a></span></div><button class="docs-search-query input is-rounded is-small is-clickable my-2 mx-auto py-1 px-2" id="documenter-search-query">Search docs (Ctrl + /)</button><ul class="docs-menu"><li><a class="tocitem" href="../">Home</a></li><li><a class="tocitem" href="../installation/">Installation</a></li><li class="is-active"><a class="tocitem" href>Tutorial</a><ul class="internal"><li><a class="tocitem" href="#1.-Schaffer-N.1"><span>1. Schaffer N.1</span></a></li><li><a class="tocitem" href="#2.-Convex-two-dimensional-problem"><span>2. Convex two-dimensional problem</span></a></li><li><a class="tocitem" href="#3.-ZDT1"><span>3. ZDT1</span></a></li><li><a class="tocitem" href="#4.-Mixed-minimization-and-maximization"><span>4. Mixed minimization and maximization</span></a></li><li><a class="tocitem" href="#5.-Three-objectives"><span>5. Three objectives</span></a></li><li><a class="tocitem" href="#6.-Expensive-MPI-simulation"><span>6. Expensive MPI simulation</span></a></li><li><a class="tocitem" href="#7.-Inspect-and-save-results"><span>7. Inspect and save results</span></a></li><li><a class="tocitem" href="#8.-Reproduce-tests-and-figures"><span>8. Reproduce tests and figures</span></a></li></ul></li><li><a class="tocitem" href="../mpi/">MPI and clusters</a></li><li><a class="tocitem" href="../examples/">Examples</a></li><li><a class="tocitem" href="../benchmarks/">Benchmarks</a></li><li><a class="tocitem" href="../api/">API reference</a></li></ul><div class="docs-version-selector field has-addons"><div class="control"><span class="docs-label button is-static is-size-7">Version</span></div><div class="docs-selector control is-expanded"><div class="select is-fullwidth is-size-7"><select id="documenter-version-selector"></select></div></div></div></nav><div class="docs-main"><header class="docs-navbar"><a class="docs-sidebar-button docs-navbar-link fa-solid fa-bars is-hidden-desktop" id="documenter-sidebar-button" href="#"></a><nav class="breadcrumb"><ul class="is-hidden-mobile"><li class="is-active"><a href>Tutorial</a></li></ul><ul class="is-hidden-tablet"><li class="is-active"><a href>Tutorial</a></li></ul></nav><div class="docs-right"><a class="docs-navbar-link" href="https://github.com/Mojiajun2022/AsyncMultiObjectiveBayesOpt.jl" title="View the repository on GitHub"><span class="docs-icon fa-brands"></span><span class="docs-label is-hidden-touch">GitHub</span></a><a class="docs-navbar-link" href="https://github.com/Mojiajun2022/AsyncMultiObjectiveBayesOpt.jl/blob/main/docs/src/tutorial.md#" title="Edit source on GitHub"><span class="docs-icon fa-solid"></span></a><a class="docs-settings-button docs-navbar-link fa-solid fa-gear" id="documenter-settings-button" href="#" title="Settings"></a><a class="docs-article-toggle-button fa-solid fa-chevron-up" id="documenter-article-toggle-button" href="javascript:;" title="Collapse all docstrings"></a></div></header><article class="content" id="documenter-page"><h1 id="Tutorial"><a class="docs-heading-anchor" href="#Tutorial">Tutorial</a><a id="Tutorial-1"></a><a class="docs-heading-anchor-permalink" href="#Tutorial" title="Permalink"></a></h1><p>This tutorial starts with analytical two-objective problems, moves to the four-dimensional ZDT1 benchmark, and finishes with mixed objective directions, three objectives, and asynchronous MPI simulations.</p><p>All programs are available in <code>examples/</code> or <code>benchmark/</code>.</p><h2 id="1.-Schaffer-N.1"><a class="docs-heading-anchor" href="#1.-Schaffer-N.1">1. Schaffer N.1</a><a id="1.-Schaffer-N.1-1"></a><a class="docs-heading-anchor-permalink" href="#1.-Schaffer-N.1" title="Permalink"></a></h2><p>Schaffer N.1 is a one-parameter problem:</p><p class="math-container">\[f_1(x)=x^2,\qquad f_2(x)=(x-2)^2.\]</p><p>Every <code>x</code> in <code>[0, 2]</code> is Pareto-optimal.</p><pre><code class="language-julia hljs">using AsyncMultiObjectiveBayesOpt
 
 objective(x) = [x[1]^2, (x[1] - 2.0)^2]
-bounds = reshape([-5.0, 5.0], 1, 2)</code></pre><p>The first objective is minimized at <code>x=0</code>, while the second is minimized at <code>x=2</code>. Every <code>x</code> in <code>[0, 2]</code> is Pareto-optimal.</p><h2 id="2.-Run-the-optimizer"><a class="docs-heading-anchor" href="#2.-Run-the-optimizer">2. Run the optimizer</a><a id="2.-Run-the-optimizer-1"></a><a class="docs-heading-anchor-permalink" href="#2.-Run-the-optimizer" title="Permalink"></a></h2><pre><code class="language-julia hljs">result = async_mobo(
+bounds = reshape([-5.0, 5.0], 1, 2)
+
+result = async_mobo(
     objective,
     bounds;
     n_objectives=2,
-    objective_senses=[:min, :min],
     max_evals=80,
     n_initial=12,
     candidate_pool=5_000,
+    acquisition=:auto,
+    ehvi_samples=64,
     seed=2026,
-)</code></pre><p>This command runs serially when launched with one Julia process. The same code runs asynchronously when launched under MPI.</p><p><img src="../assets/schaffer_front.png" alt="Schaffer analytical and observed Pareto fronts"/></p><h2 id="3.-Inspect-the-Pareto-archive"><a class="docs-heading-anchor" href="#3.-Inspect-the-Pareto-archive">3. Inspect the Pareto archive</a><a id="3.-Inspect-the-Pareto-archive-1"></a><a class="docs-heading-anchor-permalink" href="#3.-Inspect-the-Pareto-archive" title="Permalink"></a></h2><pre><code class="language-julia hljs">result.pareto_X
-result.pareto_Y
-result.pareto_indices</code></pre><p>Columns correspond across these arrays. <code>pareto_X[:, j]</code> produced the objective vector <code>pareto_Y[:, j]</code>.</p><p>There is no unique best point on a Pareto front. For convenience, the result also contains:</p><pre><code class="language-julia hljs">result.compromise_x
-result.compromise_y</code></pre><p>This is the observed Pareto point nearest the normalized ideal point. It is a neutral inspection choice, not a replacement for domain-specific preferences.</p><h2 id="4.-Mixed-minimization-and-maximization"><a class="docs-heading-anchor" href="#4.-Mixed-minimization-and-maximization">4. Mixed minimization and maximization</a><a id="4.-Mixed-minimization-and-maximization-1"></a><a class="docs-heading-anchor-permalink" href="#4.-Mixed-minimization-and-maximization" title="Permalink"></a></h2><p>Use one direction per objective:</p><pre><code class="language-julia hljs">result = async_mobo(
-    cost_and_quality,
+)
+
+println(&quot;Pareto points: &quot;, length(result.pareto_indices))
+println(&quot;Decision range: &quot;, extrema(vec(result.pareto_X)))
+println(&quot;Compromise point: &quot;, result.compromise_x)</code></pre><p><code>acquisition=:auto</code> selects EHVI because this problem has two objectives.</p><p><img src="../assets/schaffer_front.png" alt="Schaffer analytical and observed Pareto fronts"/></p><p>Run the packaged example:</p><pre><code class="language-bash hljs">julia --project=. examples/schaffer_serial.jl</code></pre><h2 id="2.-Convex-two-dimensional-problem"><a class="docs-heading-anchor" href="#2.-Convex-two-dimensional-problem">2. Convex two-dimensional problem</a><a id="2.-Convex-two-dimensional-problem-1"></a><a class="docs-heading-anchor-permalink" href="#2.-Convex-two-dimensional-problem" title="Permalink"></a></h2><p>The second problem adds a decision direction that should converge to zero:</p><p class="math-container">\[f_1(x)=x_1^2+x_2^2,\qquad
+f_2(x)=(x_1-1)^2+x_2^2.\]</p><p>Its Pareto set is <code>x1 in [0, 1]</code> and <code>x2=0</code>.</p><pre><code class="language-julia hljs">using AsyncMultiObjectiveBayesOpt
+
+function convex_objective(x)
+    penalty = x[2]^2
+    return [
+        x[1]^2 + penalty,
+        (x[1] - 1.0)^2 + penalty,
+    ]
+end
+
+result = async_mobo(
+    convex_objective,
+    [-0.5 1.5; -1.0 1.0];
+    n_objectives=2,
+    max_evals=100,
+    n_initial=16,
+    candidate_pool=6_000,
+    acquisition=:ehvi,
+    seed=2028,
+)</code></pre><p>The left panel compares objective fronts. The right panel checks whether the optimizer recovered the decision-space condition <code>x2=0</code>.</p><p><img src="../assets/convex_front.png" alt="Convex objective and decision fronts"/></p><h2 id="3.-ZDT1"><a class="docs-heading-anchor" href="#3.-ZDT1">3. ZDT1</a><a id="3.-ZDT1-1"></a><a class="docs-heading-anchor-permalink" href="#3.-ZDT1" title="Permalink"></a></h2><p>ZDT1 is a more demanding four-dimensional test:</p><p class="math-container">\[f_1=x_1,\quad
+g=1+9\frac{x_2+x_3+x_4}{3},\quad
+f_2=g\left(1-\sqrt{f_1/g}\right).\]</p><p>The analytical Pareto set requires <code>x2=x3=x4=0</code>, and its objective front is <code>f2=1-sqrt(f1)</code>.</p><pre><code class="language-julia hljs">using AsyncMultiObjectiveBayesOpt
+
+function zdt1(x)
+    f1 = x[1]
+    g = 1.0 + 9.0 * sum(@view x[2:end]) / (length(x) - 1)
+    return [f1, g * (1.0 - sqrt(f1 / g))]
+end
+
+bounds = [
+    0.0 1.0
+    0.0 1.0
+    0.0 1.0
+    0.0 1.0
+]
+
+result = async_mobo(
+    zdt1,
     bounds;
+    n_objectives=2,
+    max_evals=180,
+    n_initial=24,
+    candidate_pool=12_000,
+    acquisition=:ehvi,
+    ehvi_samples=64,
+    optimize_length_scale=true,
+    seed=2029,
+)</code></pre><p>The ARD length-scale refinement is important here: <code>x1</code> selects a position along the front, while <code>x2:x4</code> control distance away from it.</p><p><img src="../assets/zdt1_front.png" alt="ZDT1 objective front and auxiliary decisions"/></p><p>For a higher-accuracy decision manifold, increase real evaluations before increasing Monte Carlo samples:</p><pre><code class="language-julia hljs">high_accuracy = async_mobo(
+    zdt1,
+    bounds;
+    n_objectives=2,
+    max_evals=240,
+    n_initial=24,
+    candidate_pool=16_000,
+    acquisition=:ehvi,
+    ehvi_samples=64,
+    seed=2029,
+)</code></pre><p>The fixed-seed reference run produced:</p><table><tr><th style="text-align: right">Configuration</th><th style="text-align: right">IGD</th><th style="text-align: right">Pareto points</th><th style="text-align: right">Auxiliary decisions</th></tr><tr><td style="text-align: right">180 evaluations</td><td style="text-align: right">0.023823</td><td style="text-align: right">17</td><td style="text-align: right">Close to the analytical manifold</td></tr><tr><td style="text-align: right">240 evaluations</td><td style="text-align: right">0.022147</td><td style="text-align: right">18</td><td style="text-align: right"><code>x2=x3=x4=0</code> on the returned front</td></tr></table><p>Increasing <code>ehvi_samples</code> from 64 to 128 did not materially improve this benchmark, but approximately doubled acquisition work. The limiting factor was the number of informative objective evaluations, not Monte Carlo variance.</p><h3 id="Why-the-original-ZDT1-fit-was-weak"><a class="docs-heading-anchor" href="#Why-the-original-ZDT1-fit-was-weak">Why the original ZDT1 fit was weak</a><a id="Why-the-original-ZDT1-fit-was-weak-1"></a><a class="docs-heading-anchor-permalink" href="#Why-the-original-ZDT1-fit-was-weak" title="Permalink"></a></h3><p>The original ParEGO-only implementation compressed both objectives into one random scalar target. That is useful for many objectives, but on ZDT1 it spent too many proposals revisiting endpoint weights and gave relatively sparse coverage between the endpoints. A single isotropic GP length scale also had to represent two different roles: <code>x1</code> moves along the Pareto front, whereas <code>x2:x4</code> move away from it. Fully random local perturbations made it difficult to preserve a good <code>x1</code> value while independently driving an auxiliary coordinate toward zero.</p><p>The current optimizer addresses these issues with:</p><ul><li>EHVI for two objectives, which directly rewards objective-space Pareto coverage;</li><li>one normalized GP per objective;</li><li>marginal-likelihood refinement of global and per-coordinate ARD length scales;</li><li>coordinate-preserving candidates around observed Pareto points;</li><li>pending-point fantasies for asynchronous workers;</li><li>less frequent extreme ParEGO weights when ParEGO is selected explicitly.</li></ul><p>For similar smooth two-objective problems, tune in this order:</p><ol><li>Keep <code>acquisition=:auto</code> or select <code>:ehvi</code>.</li><li>Increase <code>max_evals</code>; this had the largest effect on ZDT1.</li><li>Increase <code>candidate_pool</code> when objective evaluations are expensive enough to justify more scheduler work.</li><li>Keep <code>optimize_length_scale=true</code>, especially when parameter dimensions have different effects.</li><li>Increase <code>ehvi_samples</code> only if repeated fixed-budget runs show acquisition noise; 64 was sufficient here.</li><li>Increase <code>noise</code> above <code>1e-8</code> only for genuinely noisy objectives or numerical instability.</li></ol><p>Use several seeds and report the median IGD for comparative studies. The fixed-seed values in this tutorial are reproducibility references, not a claim that every run or black-box objective reaches the same accuracy.</p><p>Run the packaged example:</p><pre><code class="language-bash hljs">julia --project=. examples/zdt1_serial.jl</code></pre><h2 id="4.-Mixed-minimization-and-maximization"><a class="docs-heading-anchor" href="#4.-Mixed-minimization-and-maximization">4. Mixed minimization and maximization</a><a id="4.-Mixed-minimization-and-maximization-1"></a><a class="docs-heading-anchor-permalink" href="#4.-Mixed-minimization-and-maximization" title="Permalink"></a></h2><p>Objective values retain their original signs and units. Specify one direction per objective:</p><pre><code class="language-julia hljs">using AsyncMultiObjectiveBayesOpt
+
+function cost_and_quality(x)
+    cost = x[1]^2 + 0.2 * x[2]^2
+    quality = 1.0 - (x[1] - 1.0)^2 - (x[2] - 0.5)^2
+    return [cost, quality]
+end
+
+result = async_mobo(
+    cost_and_quality,
+    [-1.0 2.0; -1.0 2.0];
     n_objectives=2,
     objective_senses=[:min, :max],
     max_evals=100,
-)</code></pre><p>The returned objective values retain their original signs and units.</p><h2 id="5.-Choose-an-evaluation-budget"><a class="docs-heading-anchor" href="#5.-Choose-an-evaluation-budget">5. Choose an evaluation budget</a><a id="5.-Choose-an-evaluation-budget-1"></a><a class="docs-heading-anchor-permalink" href="#5.-Choose-an-evaluation-budget" title="Permalink"></a></h2><p>Useful starting points for expensive deterministic objectives are:</p><table><tr><th style="text-align: right">Parameter dimensions</th><th style="text-align: right">Initial design</th><th style="text-align: right">Total budget</th><th style="text-align: right">Candidate pool</th></tr><tr><td style="text-align: right">1-3</td><td style="text-align: right">12-20</td><td style="text-align: right">80-150</td><td style="text-align: right">5,000-8,000</td></tr><tr><td style="text-align: right">4-8</td><td style="text-align: right">20-40</td><td style="text-align: right">150-400</td><td style="text-align: right">8,000-20,000</td></tr><tr><td style="text-align: right">9-15</td><td style="text-align: right">40-80</td><td style="text-align: right">300-1,000</td><td style="text-align: right">20,000-50,000</td></tr></table><p>These are starting points, not guarantees. More objectives, noise, disconnected fronts, and broad parameter bounds require larger budgets.</p><h2 id="6.-Connect-an-expensive-simulation"><a class="docs-heading-anchor" href="#6.-Connect-an-expensive-simulation">6. Connect an expensive simulation</a><a id="6.-Connect-an-expensive-simulation-1"></a><a class="docs-heading-anchor-permalink" href="#6.-Connect-an-expensive-simulation" title="Permalink"></a></h2><p>Run the expensive simulation once and derive every objective from the same output:</p><pre><code class="language-julia hljs">function objective(parameters)
-    simulation = run_simulation(parameters)
+    n_initial=16,
+    candidate_pool=6_000,
+    seed=2030,
+)</code></pre><p>Run:</p><pre><code class="language-bash hljs">julia --project=. examples/mixed_senses_serial.jl</code></pre><h2 id="5.-Three-objectives"><a class="docs-heading-anchor" href="#5.-Three-objectives">5. Three objectives</a><a id="5.-Three-objectives-1"></a><a class="docs-heading-anchor-permalink" href="#5.-Three-objectives" title="Permalink"></a></h2><p>Three or more objectives automatically use ParEGO:</p><pre><code class="language-julia hljs">using AsyncMultiObjectiveBayesOpt
+using MPI
+
+function three_objectives(x)
+    a, b = x
+    return [
+        (a + 0.5)^2 + 0.2 * b^2,
+        (a - 0.2)^2 + (b + 0.3)^2,
+        0.3 * a^2 + (b - 0.6)^2,
+    ]
+end
+
+result = async_mobo(
+    three_objectives,
+    [-2.0 2.0; -2.0 2.0];
+    n_objectives=3,
+    max_evals=100,
+    n_initial=16,
+    candidate_pool=8_000,
+    acquisition=:auto,
+    seed=2030,
+)
+
+if MPI.Comm_rank(MPI.COMM_WORLD) == 0
+    println(&quot;Pareto points: &quot;, length(result.pareto_indices))
+    println(&quot;Compromise parameters: &quot;, result.compromise_x)
+end
+
+MPI.Barrier(MPI.COMM_WORLD)
+MPI.Finalize()</code></pre><p><img src="../assets/three_objective_front.png" alt="Three-objective Pareto archive"/></p><p>Run with four workers:</p><pre><code class="language-bash hljs">$HOME/.julia/bin/mpiexecjl -n 5 \
+  julia --project=. examples/three_objectives_mpi.jl</code></pre><h2 id="6.-Expensive-MPI-simulation"><a class="docs-heading-anchor" href="#6.-Expensive-MPI-simulation">6. Expensive MPI simulation</a><a id="6.-Expensive-MPI-simulation-1"></a><a class="docs-heading-anchor-permalink" href="#6.-Expensive-MPI-simulation" title="Permalink"></a></h2><p>Run the expensive simulation once and derive every objective from the same output. Give each rank a separate working directory:</p><pre><code class="language-julia hljs">using AsyncMultiObjectiveBayesOpt
+using MPI
+
+function objective(parameters)
+    rank = MPI.Comm_rank(MPI.COMM_WORLD)
+    workdir = joinpath(&quot;scratch&quot;, &quot;rank_$rank&quot;)
+    mkpath(workdir)
+
+    simulation = run_simulation(parameters, workdir)
     return [
         fit_error_dataset_a(simulation),
         fit_error_dataset_b(simulation),
         fit_error_dataset_c(simulation),
     ]
-end</code></pre><p>If the simulation throws or any returned objective is non-finite, that entire evaluation is recorded as a failure. The optimizer continues with the remaining finite evaluations.</p><h2 id="7.-Save-results"><a class="docs-heading-anchor" href="#7.-Save-results">7. Save results</a><a id="7.-Save-results-1"></a><a class="docs-heading-anchor-permalink" href="#7.-Save-results" title="Permalink"></a></h2><p>Only rank zero receives the result. A dependency-free CSV writer can use <code>DelimitedFiles</code>:</p><pre><code class="language-julia hljs">using DelimitedFiles
+end
+
+result = async_mobo(
+    objective,
+    bounds;
+    n_objectives=3,
+    max_evals=400,
+    n_initial=40,
+    initial_concurrency=40,
+    candidate_pool=20_000,
+    gc_after_evaluation=true,
+    seed=2031,
+)
+
+if MPI.Comm_rank(MPI.COMM_WORLD) == 0
+    save_result(result)
+end
+
+MPI.Barrier(MPI.COMM_WORLD)
+MPI.Finalize()</code></pre><p>Launch without nested thread oversubscription:</p><pre><code class="language-bash hljs">OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 JULIA_NUM_THREADS=1 \
+$HOME/.julia/bin/mpiexecjl -n 41 julia --project=. run_fit.jl</code></pre><p>If the simulation throws or any objective is non-finite, the evaluation is recorded as a failure and excluded from surrogate fitting.</p><h2 id="7.-Inspect-and-save-results"><a class="docs-heading-anchor" href="#7.-Inspect-and-save-results">7. Inspect and save results</a><a id="7.-Inspect-and-save-results-1"></a><a class="docs-heading-anchor-permalink" href="#7.-Inspect-and-save-results" title="Permalink"></a></h2><p>Columns correspond across parameter and objective matrices:</p><pre><code class="language-julia hljs">result.pareto_X
+result.pareto_Y
+result.pareto_indices
+result.compromise_x
+result.compromise_y
+result.X_history
+result.Y_history</code></pre><p>There is no unique best Pareto point. <code>compromise_x</code> is merely the observed front point nearest the normalized ideal.</p><p>Save dependency-free CSV files on rank zero:</p><pre><code class="language-julia hljs">using DelimitedFiles
 using MPI
 
 if MPI.Comm_rank(MPI.COMM_WORLD) == 0
@@ -35,4 +171,7 @@ if MPI.Comm_rank(MPI.COMM_WORLD) == 0
     writedlm(&quot;pareto_objectives.csv&quot;, permutedims(result.pareto_Y), &#39;,&#39;)
     writedlm(&quot;all_parameters.csv&quot;, permutedims(result.X_history), &#39;,&#39;)
     writedlm(&quot;all_objectives.csv&quot;, permutedims(result.Y_history), &#39;,&#39;)
-end</code></pre><p>For long cluster jobs, save the completed result immediately after <code>async_mobo</code> returns.</p></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../installation/">« Installation</a><a class="docs-footer-nextpage" href="../mpi/">MPI and clusters »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="auto">Automatic (OS)</option><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option><option value="catppuccin-latte">catppuccin-latte</option><option value="catppuccin-frappe">catppuccin-frappe</option><option value="catppuccin-macchiato">catppuccin-macchiato</option><option value="catppuccin-mocha">catppuccin-mocha</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 1.17.0 on <span class="colophon-date" title="Wednesday 29 July 2026 23:04">Wednesday 29 July 2026</span>. Using Julia version 1.12.6.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
+end</code></pre><h2 id="8.-Reproduce-tests-and-figures"><a class="docs-heading-anchor" href="#8.-Reproduce-tests-and-figures">8. Reproduce tests and figures</a><a id="8.-Reproduce-tests-and-figures-1"></a><a class="docs-heading-anchor-permalink" href="#8.-Reproduce-tests-and-figures" title="Permalink"></a></h2><p>Run all analytical-front regression tests:</p><pre><code class="language-bash hljs">julia --project=. -e &#39;using Pkg; Pkg.test()&#39;</code></pre><p>Print benchmark IGD results:</p><pre><code class="language-bash hljs">julia --project=. benchmark/run_benchmarks.jl</code></pre><p>Regenerate every documentation plot:</p><pre><code class="language-bash hljs">julia --project=benchmark -e &#39;
+  using Pkg
+  Pkg.develop(path=pwd())
+  include(&quot;benchmark/generate_plots.jl&quot;)&#39;</code></pre></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../installation/">« Installation</a><a class="docs-footer-nextpage" href="../mpi/">MPI and clusters »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="auto">Automatic (OS)</option><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option><option value="catppuccin-latte">catppuccin-latte</option><option value="catppuccin-frappe">catppuccin-frappe</option><option value="catppuccin-macchiato">catppuccin-macchiato</option><option value="catppuccin-mocha">catppuccin-mocha</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 1.17.0 on <span class="colophon-date" title="Wednesday 29 July 2026 23:38">Wednesday 29 July 2026</span>. Using Julia version 1.12.6.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
