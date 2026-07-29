@@ -16,6 +16,7 @@ makedocs(
         canonical="https://Mojiajun2022.github.io/AsyncMultiObjectiveBayesOpt.jl",
         edit_link="main",
         prettyurls=get(ENV, "CI", "false") == "true",
+        repolink="https://github.com/Mojiajun2022/AsyncMultiObjectiveBayesOpt.jl",
     ),
     pages=[
         "Home" => "index.md",
@@ -26,7 +27,10 @@ makedocs(
         "Benchmarks" => "benchmarks.md",
         "API reference" => "api.md",
     ],
-    warnonly=[:missing_docs],
+    checkdocs=:none,
 )
 
-deploydocs(repo="github.com/Mojiajun2022/AsyncMultiObjectiveBayesOpt.jl.git")
+deploydocs(
+    repo="github.com/Mojiajun2022/AsyncMultiObjectiveBayesOpt.jl.git",
+    devbranch="main",
+)
